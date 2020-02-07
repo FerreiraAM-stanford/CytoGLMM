@@ -39,7 +39,9 @@ Depends:
 Suggests:
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    SummarizedExperiment,
+    tidyverse
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 biocViews:
