@@ -48,7 +48,7 @@ function_compute_log2foldchange <- function(data, condition, protein_name){
 #' @param data cytoglmm object, results from the CytoGLMM model.
 #' @param alpha numeric, threshold of p-value significance (by default alpha = 0.05)
 #' @return tibble, formated CytoGLMM model results.
-function_prepare_output_CytoGLMMmodel <- function(data, alpha = 0.05){
+function_prepare_output_CytoGLMMmodel <- function(data, alpha){
   # Extract the summary
   sum_data <- summary(data)
   # Add a threshold column on the adjusted p-values
@@ -70,9 +70,9 @@ function_prepare_output_CytoGLMMmodel <- function(data, alpha = 0.05){
 #' @return tibble.
 function_combine_datas <- function(summary_CytoGLMM_fit, data_log2foldchange, data_MSI){
   # Combine log2foldchange with CytoGLMM p-values
-  data_log2foldchange_CytoGLMMpvalues <- left_join(summary_CytoGLMM_fit, data_log2foldchange)
+  data_log2foldchange_CytoGLMMpvalues <- suppressMessages(left_join(summary_CytoGLMM_fit, data_log2foldchange))
   # Add MSI
-  data_log2foldchange_CytoGLMMpvalues_MSI <- left_join(data_log2foldchange_CytoGLMMpvalues, data_MSI)
+  data_log2foldchange_CytoGLMMpvalues_MSI <- suppressMessages(left_join(data_log2foldchange_CytoGLMMpvalues, data_MSI))
   # Return
   return(data_log2foldchange_CytoGLMMpvalues_MSI)
 }
@@ -83,10 +83,10 @@ function_combine_datas <- function(summary_CytoGLMM_fit, data_log2foldchange, da
 #' @param protein_name vector, vector of markers.
 #' @param condition character, column's name where the condition are stored.
 #' @param CytoGLMM_fit cytoglmm object, results from the CytoGLMM model.
-#' @param ... numeric.
+#' @param alpha numeric, threshold of p-value significance (by default alpha = 0.05)
 #' @return tibble.
 #' @export
-prepare_data_for_volcanoplot <- function(data, protein_name, condition, CytoGLMM_fit, ...){
+prepare_data_for_volcanoplot <- function(data, protein_name, condition, CytoGLMM_fit, alpha = 0.05){
   # Add 0.05 to the marker values (because many 1 in the data)
   data_05 <- data %>%
     dplyr::mutate_at(.vars = protein_name, .funs = function_add_05)
@@ -97,7 +97,7 @@ prepare_data_for_volcanoplot <- function(data, protein_name, condition, CytoGLMM
   # Compute MSI
   data_MSI <- function_compute_MSI(data, protein_name = protein_name)
   # Prepare CytoGLMM data
-  formated_CytoGLMM_fit <- function_prepare_output_CytoGLMMmodel(data = CytoGLMM_fit)
+  formated_CytoGLMM_fit <- function_prepare_output_CytoGLMMmodel(data = CytoGLMM_fit, alpha = alpha)
   # Combine data
   function_combine_datas(summary_CytoGLMM_fit = formated_CytoGLMM_fit,
                          data_log2foldchange = data_05_log2foldchange,
