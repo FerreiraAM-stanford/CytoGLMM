@@ -14,12 +14,12 @@ function_add_05 <- function(x){
 #' Compute Mean Signal Intensity (MSI) per marker
 #'
 #' @param data tibble, CyTOF data.
-#' @param protein_name vector, vector of markers.
+#' @param protein_names vector, vector of markers.
 #' @return tibble.
-function_compute_MSI <- function(data, protein_name){
+function_compute_MSI <- function(data, protein_names){
   # Compute the mean for each marker
   MSI_data <- data %>%
-    dplyr::select(protein_name) %>%
+    dplyr::select(protein_names) %>%
     dplyr::summarise_all("mean")
   # Return
   tidyr::gather(MSI_data, "protein_name", "MSI")
@@ -29,16 +29,16 @@ function_compute_MSI <- function(data, protein_name){
 #'
 #' @param data tibble, CyTOF data.
 #' @param condition character, column's name where the condition are stored.
-#' @param protein_name vector, vector of markers.
+#' @param protein_names vector, vector of markers.
 #' @return tibble.
-function_compute_log2foldchange <- function(data, condition, protein_name){
+function_compute_log2foldchange <- function(data, condition, protein_names){
   # Compute mean per condition
   mean_per_condition <- data %>%
-    dplyr::select(c(condition, protein_name)) %>%
+    dplyr::select(c(condition, protein_names)) %>%
     group_by(.dots=condition) %>%
     dplyr::summarise_all("mean")
   # log2 fold change
-  mean_log2foldchange <- log2(mean_per_condition[1, protein_name]) - log2(mean_per_condition[2, protein_name])
+  mean_log2foldchange <- log2(mean_per_condition[1, protein_names]) - log2(mean_per_condition[2, protein_names])
   # Return
   tidyr::gather(mean_log2foldchange, "protein_name", "log2foldchange")
 }
@@ -79,23 +79,23 @@ function_combine_datas <- function(summary_CytoGLMM_fit, data_log2foldchange, da
 
 #' Prepare data for the volcano plot
 #'
-#' @param data tibble, CyTOF data.
-#' @param protein_name vector, vector of markers.
+#' @param data tibble, raw CyTOF data.
+#' @param protein_names vector, vector of markers.
 #' @param condition character, column's name where the condition are stored.
 #' @param CytoGLMM_fit cytoglmm object, results from the CytoGLMM model.
 #' @param alpha numeric, threshold of p-value significance (by default alpha = 0.05)
 #' @return tibble.
 #' @export
-prepare_data_for_volcanoplot <- function(data, protein_name, condition, CytoGLMM_fit, alpha = 0.05){
+prepare_data_for_volcanoplot <- function(data, protein_names, condition, CytoGLMM_fit, alpha = 0.05){
   # Add 0.05 to the marker values (because many 1 in the data)
   data_05 <- data %>%
-    dplyr::mutate_at(.vars = protein_name, .funs = function_add_05)
+    dplyr::mutate_at(.vars = protein_names, .funs = function_add_05)
   # Compute log2 fold change
   data_05_log2foldchange <- function_compute_log2foldchange(data = data_05,
-                                                            protein_name = protein_name,
+                                                            protein_names = protein_names,
                                                             condition = condition)
   # Compute MSI
-  data_MSI <- function_compute_MSI(data, protein_name = protein_name)
+  data_MSI <- function_compute_MSI(data, protein_names = protein_names)
   # Prepare CytoGLMM data
   formated_CytoGLMM_fit <- function_prepare_output_CytoGLMMmodel(data = CytoGLMM_fit, alpha = alpha)
   # Combine data
