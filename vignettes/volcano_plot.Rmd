@@ -83,7 +83,9 @@ Fit a Generalized Linear Mixed Model (GLMM) with donor random effects.
 # Does not run 
 CytoGLMM_glmm_fit_aghaeepour2017immune <- CytoGLMM::cytoglmm(df_samples_subset_transformed, 
                                                              protein_names = protein_names,
-                                                             condition = "term", group = "donor",
+                                                             condition = "term", 
+                                                             group = "donor",
+                                                             cell_n_subsample = 1000, # Subsample is used only for the sake of the data size
                                                              num_cores = 4)
 ```
 
@@ -98,7 +100,7 @@ data("CytoGLMM_glmm_fit_aghaeepour2017immune")
 Plot the volcano plot as a complementary plot for the CytoGLMM model output.
 As input parameters, we need the raw data as well as the output of the `CytoGLMM::cytoglmm` function.
 
-```{r volcano_plot, eval = FALSE}
+```{r volcano_plot}
 # Prepare the data
 data_for_volplot <- prepare_data_for_volcanoplot(data = df_samples_subset, 
                                                  protein_name = protein_names,
