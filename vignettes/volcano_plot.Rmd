@@ -85,7 +85,7 @@ CytoGLMM_glmm_fit_aghaeepour2017immune <- CytoGLMM::cytoglmm(df_samples_subset_t
                                                              protein_names = protein_names,
                                                              condition = "term", 
                                                              group = "donor",
-                                                             cell_n_subsample = 1000, # Subsample is used only for the sake of the data size
+                                                             cell_n_subsample = 1000, # Subsample is used ONLY for the sake of the data size
                                                              num_cores = 4)
 ```
 
