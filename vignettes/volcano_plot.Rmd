@@ -4,20 +4,21 @@ author: "Anne-Maud Ferreira"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-%\VignetteIndexEntry{Volcano plot}
+  %\VignetteIndexEntry{volcano_plot}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
-  ---
+---
   
-  ```{r, include = FALSE}
-  knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-  )
-  ```
-  
-  ```{r setup, warning = FALSE, message = FALSE}
-  library(CytoGLMM)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>"
+)
+```
+
+
+```{r setup, warning = FALSE, message = FALSE}
+library(CytoGLMM)
 library(SummarizedExperiment)
 library(magrittr)
 library(tidyverse)
@@ -34,7 +35,6 @@ As an example, the Aghaeepour et al. (2017) dataset was used:
 - Selection of 16 women from the Aghaeepour et al. (2017) dataset 
 - Samples from the first and third trimester of their pregnancy stimulated by IFN$\alpha$
 
-
 ```{r load_data}
 # Path
 zenodo_url <- "https://zenodo.org/record/2652578/files/"
@@ -46,7 +46,8 @@ load(url(paste0(zenodo_url, cytof_data)))
 
 ## Pre-processing of the data 
 
-The data are processed as in the example of the CytoGLMM workflow available online: 
+The data are processed as in the example of the CytoGLMM workflow available [online](https://christofseiler.github.io/CytoGLMM/articles/CytoGLMM.html#generalized-linear-model-with-bootstrap):
+
 
 ```{r process_data}
 # Extract the values
@@ -71,33 +72,39 @@ df_samples_subset %<>% dplyr::select(protein_names, sample_info_names)
 # Transform the data
 df_samples_subset_transformed <- df_samples_subset %>% 
   dplyr::mutate_at(protein_names, 
-            function(x) asinh(x/5))
-
-
+                   function(x) asinh(x/5))
 ```
 
 ## Fit the GLMM model
 
 Fit a Generalized Linear Mixed Model (GLMM) with donor random effects.
 
-```{r fit_cytoglmm}
-glmm_fit <- CytoGLMM::cytoglmm(df_samples_subset_transformed, 
-                               protein_names = protein_names,
-                               condition = "term", group = "donor")
+```{r fit_cytoglmm, eval = FALSE}
+# Does not run 
+CytoGLMM_glmm_fit_aghaeepour2017immune <- CytoGLMM::cytoglmm(df_samples_subset_transformed, 
+                                                             protein_names = protein_names,
+                                                             condition = "term", group = "donor",
+                                                             num_cores = 4)
+```
+
+The model was run outside of this vignette and store internally in the package, running exactly the previous chunks.
+
+```{r load_fit_cytoglmm}
+data("CytoGLMM_glmm_fit_aghaeepour2017immune")
 ```
 
 # Volcano plot
 
 Plot the volcano plot as a complementary plot for the CytoGLMM model output.
+As input parameters, we need the raw data as well as the output of the `CytoGLMM::cytoglmm` function.
 
-```{r volcano_plot}
+```{r volcano_plot, eval = FALSE}
 # Prepare the data
 data_for_volplot <- prepare_data_for_volcanoplot(data = df_samples_subset, 
                                                  protein_name = protein_names,
                                                  condition = "term", 
-                                                 CytoGLMM_fit = glmm_fit)
+                                                 CytoGLMM_fit = CytoGLMM_glmm_fit_aghaeepour2017immune)
 # Volcano plot
 volcano_plot(data = data_for_volplot, 
              exp_conditions = c("1st trim", "3rd trim"))
 ```
-
