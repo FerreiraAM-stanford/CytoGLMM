@@ -33,13 +33,14 @@ Imports:
     strucchange,
     tibble,
     ggrepel,
-    MASS
+    MASS,
+    tidyr
 Depends:
     Rcpp
 Suggests:
     knitr,
     rmarkdown,
-    testthat,
+    testthat, 
     SummarizedExperiment,
     tidyverse
 VignetteBuilder: knitr
