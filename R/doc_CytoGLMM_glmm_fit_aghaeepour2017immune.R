@@ -15,7 +15,7 @@
 #'   \item{group}{character, donor as random effects}
 #'   \item{covariate_names}{NULL}
 #'   \item{cell_n_min}{numeric, Inf}
-#'   \item{cell_n_subsample}{numeric, 0}
+#'   \item{cell_n_subsample}{numeric, 1000}
 #'   \item{seed}{numeric, 56026}
 #'   \item{num_cores}{numeric, 4}
 #'
